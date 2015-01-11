@@ -146,8 +146,11 @@ curBlock = []
 with open(sys.argv[1], 'r') as my_file:  
     reqNum = 0
     DictID = {}
+    header = []
     reqsOut = []
     newNodeList = []
+
+    #parse the rest
     for line in my_file:
        #check to see if we are in a requirement box.
         line = line.decode('utf-8')
@@ -158,7 +161,8 @@ with open(sys.argv[1], 'r') as my_file:
         elif inRequirement:
             curBlock.append(line)
         else:
-            reqsOut.append(line)
+            pass            
+            #reqsOut.append(line)
                     
         if "</requirement>" in line:
             inRequirement=False      
@@ -172,7 +176,7 @@ with open(sys.argv[1], 'r') as my_file:
                     #store old ID and append to dict
                     oldID = (etree.fromstring(i)).text
                     DictID[oldID] = reqNum
-                    reqsOut.append("\t<record-id>" + str(reqNum) + "</record-id>\n")
+                    reqsOut.append(("\t<record-id>" + str(reqNum) + "</record-id>\n").decode('utf-8'))
                     #generate new node link
                     if first:
                         parentID = reqNum
@@ -194,7 +198,6 @@ with open(sys.argv[1], 'r') as my_file:
 #remove blank space so that pretty print works
 parser = etree.XMLParser(remove_blank_text=True)
 docTree = etree.parse(sys.argv[1],parser).xpath("//requirement-document")[0]
-
 #replace IDs in old document with new IDs
 #also set teh node-ID to parent ID since that's what was set in the new nodes for 
 #parent-node-ID
@@ -205,9 +208,25 @@ for i in docTree.xpath("//document-tree-node"):
 #add new nodes
 for i in newNodeList:
     docTree.append(i)
-print(etree.tostring(docTree, pretty_print = True))
+    
+ 
+#get header and testtrack opener
+with open(sys.argv[1], 'r') as my_file:   
+    for index,i in enumerate(my_file):
+        if index < 3:
+            header.append(i.decode('utf-8'))
+#print header
+for i in header:
+    sys.stdout.write(i)
+#print requirements
+for i in reqsOut:
+    sys.stdout.write(i)
+#print docTree
+print(etree.tostring(docTree,pretty_print=True))
+#print test track ojects close
+print "</TestTrackData>",
 
 
-
+#print(etree.tostring(docTree, pretty_print = True))
 #for i in  reqsOut:
 #    sys.stdout.write(i)
