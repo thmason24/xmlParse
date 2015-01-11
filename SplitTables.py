@@ -222,7 +222,7 @@ for i in header:
 for i in reqsOut:
     sys.stdout.write(i)
 #print docTree
-print(etree.tostring(docTree,pretty_print=True))
+print(etree.tostring(docTree,pretty_print=True)),
 #print test track ojects close
 print "</TestTrackData>",
 
