@@ -45,7 +45,7 @@ def FindReplace(curBlock):
                 inDesc=False
                         
         #remove existing description block 
-        curBlockOut = [i for j, i in enumerate(curBlock) if j not in toDelete]
+        #curBlockOut = [i for j, i in enumerate(curBlock) if j not in toDelete]
         descBlock =  "".join(descBlock)
         # use LXML to extract CDATA from parse.
         CDATA = getCDATA(descBlock,"//description")[0]
@@ -136,6 +136,7 @@ def FindReplace(curBlock):
         #for each requirement that was split out we now
         # must generate a complete testtrack requirement      
         xmlRequirements = []
+        curBlockOut=[]
         for i in splitReqs:
             xmlRequirements = generateXMLReq(i,''.join(curBlock))
             for j in xmlRequirements:
@@ -192,7 +193,6 @@ with open(sys.argv[1], 'r') as my_file:
                         etree.SubElement(newNode,"parent-node-id").text = str(parentID)                         
                         etree.SubElement(newNode,"node-order").text = str(nodeOrder)                        
                         etree.SubElement(newNode,"node-requirement-id").text = str(reqNum)                         
-                        #print(etree.tostring(newNode,pretty_print = True))
                         newNodeList.append(newNode)
                         nodeOrder += 1
                 else:
@@ -228,8 +228,3 @@ for i in reqsOut:
 print(etree.tostring(docTree,pretty_print=True)),
 #print test track ojects close
 print "</TestTrackData>",
-
-
-#print(etree.tostring(docTree, pretty_print = True))
-#for i in  reqsOut:
-#    sys.stdout.write(i)

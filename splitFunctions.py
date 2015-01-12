@@ -8,8 +8,7 @@ import sys
 from lxml import etree
 #from bs4 import BeautifulSoup, CData
 from bs4 import BeautifulSoup
-#always print in unicode
-#sys.stdout = codecs.getwriter('utf-8')(sys.stdout) 
+
 
 def getCDATA(block,tag):
     parseOut=[]
@@ -118,7 +117,6 @@ ol li:before {
             for row in i.content:
                 table.table.append(row)
             #create styles table and add it in front 
-            #print(table.table.prettify())
             newReq.cdata=table.table.prettify()
             
         objects.append(newReq)
