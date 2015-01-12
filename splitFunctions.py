@@ -86,14 +86,22 @@ def table2Lists(scenario,tableHead):
                     tableRows.append(row)                    
                 else:
                     break #end parse if encounter a row that's not 3 columns 
-            #add list to requirement objects                                      
-            newReq.cdata = numberedList.prettify()           
+            #add list to requirement objects   
+            style = """<style>
+    ol { counter-reset: item }
+    li { display: block }
+    li:before { content: counters(item, ".") " "; counter-increment: item }
+</style>\n"""                      
+            newReq.cdata = style + numberedList.prettify()   
+            #sys.stderr.write(newReq.cdata)
+            #sys.exit()
                                     
         else:
             #keep as table using the imported header string
             table = BeautifulSoup(tableHead)
             for row in i.content:
                 table.table.append(row)
+            #create styles table and add it in front 
             #print(table.table.prettify())
             newReq.cdata=table.table.prettify()
             
@@ -116,7 +124,8 @@ def generateXMLReq(ReqObj,block):
     #set category
     root.xpath("//custom-field-value[@field-name='Category']")[0].set('field-value', ReqObj.category)    
    
-    outString = etree.tostring(root, encoding='unicode')
+    outString = etree.tostring(root)
+
     outStringSplit=[]
     for i, line in  enumerate(outString.split('\n')):
         outStringSplit.append(line + '\n')

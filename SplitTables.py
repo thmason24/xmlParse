@@ -65,27 +65,30 @@ def FindReplace(curBlock):
         curObject.reqType = "info"        
         scenario = []
         report = False
+        appendOld = False
         for row in soup.find_all('tr'):
             key = row.td.text  #grab key from first column
             #check if this is a report
-            if "GENERAL REPORT HEADER" in key.upper():
+            if "GENERAL" in key.upper() and "REPORT" in key.upper() and "HEADER" in key.upper():
                 report = True
                 inBody = False
             #assign key
             #for report
             if report:
                 #assign category
-                if "BODY OF REPORT" in key.upper() or "CONTENTS" in key.upper():
+                if ("BODY" in key.upper()  and "REPORT" in key.upper()) or "CONTENTS" in key.upper():
                     reqType = "report"
                     inBody = True
+                    appendOld = True
                 elif "SPECIAL REQUIREMENTS" in key.upper():
                     reqType = "special"
+                    inBody = False
+                    appendOld = True
                 elif inBody and (len(row.find_all("td")) != 3 or "LAST PAGE OF REPORT" in key.upper()):
                     reqType = "reportTable"
                 #close old object and start a new one if keyed
-                if "BODY OF REPORT" in key.upper() or "SPECIAL REQUIREMENTS" in key.upper() \
-                or "CONTENTS" in key.upper() or (reqType == "reportTable" and inBody):
-                    inBody = False
+                if appendOld:
+                    appendOld = False
                     scenario.append(curObject) #append last object to list
                     curObject = reqObject()   #start new object
                     curObject.reqType = reqType 
