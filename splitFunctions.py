@@ -91,7 +91,23 @@ def table2Lists(scenario,tableHead):
     ol { counter-reset: item }
     li { display: block }
     li:before { content: counters(item, ".") " "; counter-increment: item }
-</style>\n"""                      
+</style>\n"""     
+            style = """<style>
+ol {
+    counter-reset: item;
+}
+ol li {
+    display: block;
+    position: relative;
+}
+ol li:before {
+    content: counters(item, ".")".";
+    counter-increment: item;
+    position: absolute;
+    margin-right: 100%;
+    right: 10px; /* space between number and text */
+}
+</style>\n"""                 
             newReq.cdata = style + numberedList.prettify()   
             #sys.stderr.write(newReq.cdata)
             #sys.exit()
