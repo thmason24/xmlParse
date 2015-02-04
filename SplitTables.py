@@ -36,11 +36,11 @@ with open(sys.argv[1], 'r') as my_file:
                     
         if "</requirement>" in line:
             inRequirement=False      
+            #spec parse turns requirements into scenario objects
             curBlockOut = specParse(curBlock) 
             #add serpate requiement IDs
-            first = True
+            first = True #first requirement keeps it's parent node
             for i in curBlockOut:
-              #  sys.stderr.write(str(type(i)) + "\n")
                 if "record-id" in i:
                     reqNum += 1
                     reqsOut.append(("\t<record-id>" + str(reqNum) + "</record-id>\n").decode('utf-8'))
@@ -48,14 +48,14 @@ with open(sys.argv[1], 'r') as my_file:
                     if first:
                         #store old ID and append to dict
                         oldID = (etree.fromstring(i)).text
-                        DictID[oldID] = reqNum                        
-                        parentID = reqNum
+                        DictID[oldID] = reqNum   #create dictionary of new requirements to old so that we can make the doc tree later                     
+                        parentID = reqNum #remaining are assigned this parent
                         nodeOrder = 1
                         first = False
                     else:
                         #generate node from old ID to new ID
                         newNode=etree.Element("document-tree-node")
-                        etree.SubElement(newNode,"node-id").text = str(reqNum)  #use reqNum for node-ID also                    
+                        etree.SubElement(newNode,"node-id").text = str(reqNum)  #use reqNum for node-ID also
                         etree.SubElement(newNode,"parent-node-id").text = str(parentID)                         
                         etree.SubElement(newNode,"node-order").text = str(nodeOrder)                        
                         etree.SubElement(newNode,"node-requirement-id").text = str(reqNum)                         
@@ -72,8 +72,18 @@ docTree = etree.parse(sys.argv[1],parser).xpath("//requirement-document")[0]
 #replace IDs in old document with new IDs
 #also set teh node-ID to parent ID since that's what was set in the new nodes for 
 #parent-node-ID
+
+#first generate dictionary to translate between requirement number and record-id in the original document
+# to reassign parent nodes,  we have to go from original node-ID to original requirement-ID  and then to the new node ID
+node2rec = {}
+for i in docTree.xpath("//document-tree-node"): 
+    node2rec[i.find("node-id").text] = i.find("node-requirement-id").text
+
 for i in docTree.xpath("//document-tree-node"):  
     i.find("node-requirement-id").text = str(DictID[i.find("node-requirement-id").text])
+    if not i.find("parent-node-id").text == '0':
+        i.find("parent-node-id").text = str(DictID[node2rec[i.find("parent-node-id").text]])
+    #sys.stderr.write(i.find("parent-node-id").text + "\n")
     i.find("node-id").text = i.find("node-requirement-id").text
 #add new nodes
 for i in newNodeList:

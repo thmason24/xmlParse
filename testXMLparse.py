@@ -32,7 +32,9 @@ for i in docTree:
 started = False
 for index, i in enumerate(HTML_block):
     #if ("GENERAL" in i.upper()  and "REPORT" in i.upper()) or "HEADER" in i.upper(): 
-    if "WORKSTATION DISPLAYS" in i.upper():
+    #if " Workstation determines that this is a new card" in i:
+    if "This use case begins when the Workstation receives a message from the Instrument" in i:
+    #if "purpose of this use case is to decode the message" in i :
         started = True
     
     
@@ -42,8 +44,9 @@ for index, i in enumerate(HTML_block):
         with open(path, 'w') as f:
             f.write(i.encode('UTF-8'))        
         if True:
-            webbrowser.get('safari').open(url,new=2) 
-            print i
+            webbrowser.get('windows-default').open(url) 
+            #print i
+            #exit()
             raw_input('next?')
         #webbrowser.open_new_tab(url) 
        
